@@ -1,21 +1,23 @@
 class Saldytuvas:
     def __init__(self):
         self.maisto_grupes = {
-            'darzoves': {},
-            'mesa': {},
-            'pieno produktai': {},
-            'vaisiai': {},
-            'kepiniai': {}
+            'darzoves': [],
+            'mesa': [],
+            'pieno_produktai': [],
+            'vaisiai': [],
+            'kepiniai': []
         }
 
     def prideti_produkta(self, grupes_pavadinimas, produktas, kiekis, matavimo_vienetas):
+        produktas_obj = MaistoProduktas(produktas.capitalize(), kiekis, matavimo_vienetas)
         if grupes_pavadinimas in self.maisto_grupes:
             grupes = self.maisto_grupes[grupes_pavadinimas]
-            if produktas in grupes:
-                grupes[produktas]['kiekis'] += kiekis
+            produktas_saldytuve = next((p for p in grupes if p.pavadinimas == produktas_obj.pavadinimas), None)
+            if produktas_saldytuve:
+                produktas_saldytuve.kiekis += kiekis
             else:
-                grupes[produktas] = {'kiekis': kiekis, 'matavimo_vienetas': matavimo_vienetas}
-            print(f"Pridėtas produktas: {produktas}, Kiekis: {kiekis} {matavimo_vienetas}, Grupė: {grupes_pavadinimas}")
+                grupes.append(produktas_obj)
+            print(f"Pridėtas produktas: {produktas_obj}, Grupė: {grupes_pavadinimas}")
         else:
             print(f"Netinkama maisto grupė: {grupes_pavadinimas}")
         return grupes_pavadinimas
@@ -23,12 +25,13 @@ class Saldytuvas:
     def isimti_produkta(self, grupes_pavadinimas, produktas, kiekis):
         if grupes_pavadinimas in self.maisto_grupes:
             grupes = self.maisto_grupes[grupes_pavadinimas]
-            if produktas in grupes:
-                if grupes[produktas]['kiekis'] >= kiekis:
-                    grupes[produktas]['kiekis'] -= kiekis
-                    print(f"Išimtas produktas: {produktas}, Kiekis: {kiekis} {grupes[produktas]['matavimo_vienetas']}, Grupė: {grupes_pavadinimas}")
+            produktas_saldytuve = next((p for p in grupes if p.pavadinimas == produktas.capitalize()), None)
+            if produktas_saldytuve:
+                if produktas_saldytuve.kiekis >= kiekis:
+                    produktas_saldytuve.kiekis -= kiekis
+                    print(f"Išimtas produktas: {produktas_saldytuve}, Grupė: {grupes_pavadinimas}")
                 else:
-                    print(f"Kieko nepakanka: {produktas}")
+                    print(f"Kieko nepakanka: {produktas_saldytuve}")
             else:
                 print(f"Produktas nerastas: {produktas}")
         else:
@@ -39,8 +42,8 @@ class Saldytuvas:
         print("\nŠaldytuvo turinys:")
         for grupes_pavadinimas, grupes in self.maisto_grupes.items():
             print(f"\n{grupes_pavadinimas.capitalize()}:")
-            for produktas, info in grupes.items():
-                print(f"  {produktas}: {info['kiekis']} {info['matavimo_vienetas']}")
+            for produktas in grupes:
+                print(f"  {produktas}")
 
     def tikrinti_pakanka_produktu(self, recepto_produktai):
         pakanka = True
@@ -48,9 +51,10 @@ class Saldytuvas:
             for produktas, kiekis in produktai.items():
                 if grupes_pavadinimas in self.maisto_grupes:
                     grupes = self.maisto_grupes[grupes_pavadinimas]
-                    if produktas in grupes and grupes[produktas]['kiekis'] < kiekis:
+                    produktas_saldytuve = next((p for p in grupes if p.pavadinimas == produktas.capitalize()), None)
+                    if produktas_saldytuve and produktas_saldytuve.kiekis < kiekis:
                         pakanka = False
-                        print(f"Trūksta produkto: {produktas}, Kiekis reikalingas: {kiekis} {grupes[produktas]['matavimo_vienetas']}")
+                        print(f"Trūkstamas produktas: {produktas_saldytuve}, Reikalingas kiekis: {kiekis}")
                 else:
                     pakanka = False
                     print(f"Netinkama maisto grupė: {grupes_pavadinimas}")
@@ -58,8 +62,13 @@ class Saldytuvas:
 
 
 class MaistoProduktas:
-    def __init__(self, pavadinimas):
+    def __init__(self, pavadinimas, kiekis, matavimo_vienetas):
         self.pavadinimas = pavadinimas
+        self.kiekis = kiekis
+        self.matavimo_vienetas = matavimo_vienetas
+
+    def __str__(self):
+        return f"{self.pavadinimas}: {self.kiekis} {self.matavimo_vienetas}"
 
 
 def main():
