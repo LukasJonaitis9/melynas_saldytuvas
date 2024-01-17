@@ -1,18 +1,26 @@
-""" Komandinio darbo užduotis
-===[ Šaldytuvas ]===
+biudzetas = {}
 
-Reikalavimai:
+def prideti_pajamas(paskirtis, suma):
+    if paskirtis not in biudzetas:
+        biudzetas[paskirtis] = 0
+    biudzetas[paskirtis] += suma
 
-* Šaldytuvo turinys - žodynas, kurio raktas yra produkto pavadinimas, reikšmė - kiekis (float).
-* Pridėti produktą į šaldytuvą. Pridedant egzistuojantį produktą, kiekiai sudedami su esančiais.
-* Išimti produktą iš šaldytuvo. Išimant egzistuojantį produktą, kiekis atitinkamai sumažinamas.
-* Patikrinti, ar reikiamas produkto kiekis yra šaldytuve.
-* Išspausdinti visą šaldytuvo turinį su kiekiais.
+def prideti_islaidas(paskirtis, suma):
+    if paskirtis not in biudzetas:
+        biudzetas[paskirtis] = 0
+    biudzetas[paskirtis] -= suma
 
-BONUS:
+def spausdinti_zurnala():
+    print("Pajamų/Išlaidų Žurnalas:")
+    for paskirtis, suma in biudzetas.items():
+        print(f"{paskirtis}: {suma}")
 
-* Patikrinti, ar receptas išeina. 
-** Recepto įvedimas vyksta viena eilute, kuri po to išdalinama. Pva.: Sūris: 0.5, Pomidoras: 2, Duona: 0.4
-** Jeigu receptas neišeina, išvardinti kiek ir kokių produktų trūksta.
+def skaiciuoti_balansa():
+    balansas = sum(biudzetas.values())
+    print(f"Biudžeto balansas: {balansas}")
 
-"""
+while True:
+    print('=-=-=Balansas=-=-=')
+    print('1: Prideti pajamas')
+    print('2: Islaidos')
+    print('3: Balansas')
